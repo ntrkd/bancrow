@@ -1,10 +1,11 @@
-console.log("Scraper is running");
 setTimeout(() => {
     main();
 }, 1000);
 
-function main() {
-    showAllCourses();
+async function main() {
+    await showAllCourses(); // Wait for the new page to load
+    const data = grabCourseDataTable();
+    console.log(data);
 }
 
 // Needs to be called once we are the results page. Returns an array of objects containing all available data.
@@ -26,11 +27,32 @@ function grabCourseDataTable() {
     tbody.querySelectorAll("tr").forEach(tr => {
         ctr++;
     });
-    console.log(ctr);
+
+    return ctr;
+}
+
+async function waitForResultPage(): Promise<void> {
+    return new Promise<void>((resolve) => {
+        // Select the body element which exists on the search and result page as the DOM element to observe
+        const body = document.querySelector(".body-content.ui-layout-center");
+        if (body === null) {
+            throw new Error("Failed to get the body element: .body-content.ui-layout-center");
+        }
+
+        let searchLoadObserver = new MutationObserver((changes: MutationRecord[], observer: MutationObserver) => {
+            let element = document.querySelector<HTMLElement>(".results-title")
+            if (element && element.offsetParent != null) {
+                observer.disconnect();
+                resolve();
+            }
+        });
+
+        searchLoadObserver.observe(body, {childList: true, subtree: true});
+    });
 }
 
 // Expects to be on the search page
-function showAllCourses() {
+async function showAllCourses() {
     // Find the search button
     const searchBtn = document.getElementById("search-go");
     if (searchBtn) {
@@ -39,18 +61,6 @@ function showAllCourses() {
         console.warn("Unable to find the id=\"search-go\" element. Are you on the search page?");
     }
 
-    // Select the body element which exists on the search and result page as the DOM element to observe
-    const body = document.querySelector(".body-content.ui-layout-center");
-    if (body === null) {
-        throw new Error("Failed to get the body element: .body-content.ui-layout-center");
-    }
-
-    let searchLoadObserver = new MutationObserver((changes: MutationRecord[], observer: MutationObserver) => {
-        let element = document.querySelector<HTMLElement>(".results-title")
-        if (element && element.offsetParent != null) {
-            observer.disconnect();
-            grabCourseDataTable();
-        }
-    });
-    searchLoadObserver.observe(body, {childList: true, subtree: true});
+    // Wait for the results page elements to load
+    await waitForResultPage();
 }
