@@ -8,6 +8,20 @@ async function main() {
     console.log(data);
 }
 
+/**
+ * Helper method to find the pagination input field and extract the vaue of it.
+ * @returns the page number else -1
+ */
+function getCurrentPage(): number {
+    const input = document.querySelector<HTMLInputElement>('.page-number.enabled');
+    if (!input) {
+        console.log("Unable to find the pagination input field");
+        return -1;
+    }
+
+    return Number.parseInt(input.value);
+}
+
 // Needs to be called once we are the results page. Returns an array of objects containing all available data.
 function grabCourseDataTable() {
     let table = document.getElementById("table1");
