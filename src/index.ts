@@ -22,7 +22,10 @@ function getCurrentPage(): number {
     return Number.parseInt(input.value);
 }
 
-// Needs to be called once we are the results page. Returns an array of objects containing all available data.
+/**
+ * Expects to be called on the results page.
+ * @returns an array of objects containing the extracted data
+ */
 function grabCourseDataTable() {
     let table = document.getElementById("table1");
     if (!table) {
@@ -45,6 +48,10 @@ function grabCourseDataTable() {
     return ctr;
 }
 
+/**
+ * Helper method to await pause until the results page loads.
+ * @returns a promise that is only accepted once the results element is made visible.
+ */
 async function waitForResultPage(): Promise<void> {
     return new Promise<void>((resolve) => {
         // Select the body element which exists on the search and result page as the DOM element to observe
@@ -65,7 +72,9 @@ async function waitForResultPage(): Promise<void> {
     });
 }
 
-// Expects to be on the search page
+/**
+ * Helper function to click the search button then wait for results page. Only returns once the results page has loaded.
+ */
 async function showAllCourses() {
     // Find the search button
     const searchBtn = document.getElementById("search-go");
