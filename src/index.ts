@@ -10,35 +10,6 @@ async function main() {
 }
 
 /**
- * Helper script to get the total number of pages. Should be called on the results page.
- * @returns the total number of pages else -1
- */
-function getTotalPages(): number {
-    const span = document.querySelector<HTMLElement>(".paging-text.total-pages");
-    if (!span) {
-        console.warn("Unable to find the total page number element. Are we on the results page?");
-        return -1;
-    }
-
-    let totalPages = Number.parseInt(span.innerText);
-    return totalPages;
-}
-
-/**
- * Helper method to find the pagination input field and extract the vaue of it. Should be called on the results page.
- * @returns the page number else -1
- */
-function getCurrentPage(): number {
-    const input = document.querySelector<HTMLInputElement>('.page-number.enabled');
-    if (!input) {
-        console.log("Unable to find the pagination input field");
-        return -1;
-    }
-
-    return Number.parseInt(input.value);
-}
-
-/**
  * Expects to be called on the results page.
  * @returns an array of objects containing the extracted data
  */
@@ -102,4 +73,33 @@ async function showAllCourses() {
 
     // Wait for the results page elements to load
     await waitForResultPage();
+}
+
+/**
+ * Helper script to get the total number of pages. Should be called on the results page.
+ * @returns the total number of pages else -1
+ */
+function getTotalPages(): number {
+    const span = document.querySelector<HTMLElement>(".paging-text.total-pages");
+    if (!span) {
+        console.warn("Unable to find the total page number element. Are we on the results page?");
+        return -1;
+    }
+
+    let totalPages = Number.parseInt(span.innerText);
+    return totalPages;
+}
+
+/**
+ * Helper method to find the pagination input field and extract the vaue of it. Should be called on the results page.
+ * @returns the page number else -1
+ */
+function getCurrentPage(): number {
+    const input = document.querySelector<HTMLInputElement>('.page-number.enabled');
+    if (!input) {
+        console.log("Unable to find the pagination input field");
+        return -1;
+    }
+
+    return Number.parseInt(input.value);
 }
