@@ -14,5 +14,8 @@
     "@types/tampermonkey": "^5.0.5",
     "esbuild": "^0.28.0",
     "eslint": "^10.2.0"
+  },
+  "dependencies": {
+    "@medv/finder": "^4.0.2"
   }
 }
