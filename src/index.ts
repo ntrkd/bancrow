@@ -1,12 +1,18 @@
+import { ParserErrorHandler } from "./ParserErrorHandler";
+import type { CourseRow, Instructor, Meeting } from "./types/courseData";
+import { finder } from '@medv/finder';
+
 setTimeout(() => {
     main();
 }, 1000);
 
 async function main() {
+    const pe = new ParserErrorHandler();
+
     await showAllCourses(); // Wait for the new page to load
-    const data = grabCourseDataTable();
-    console.log(data);
-    console.log(getTotalPages());
+    const data = grabCourseDataTable(pe);
+
+    pe.flush();
 }
 
 /**
@@ -16,14 +22,30 @@ async function main() {
 function grabCourseDataTable() {
     let table = document.getElementById("table1");
     if (!table) {
-        console.log("Unable to find the #table1 element. Skipping data extraction for page.");
+        pe.newError({
+            errorType: "MissingElement",
+            message: "Unable to find the table1 element in the <body>. Skipping page",
+            received: "null",
+            expected: "element of ID table1",
+            elementPath: finder(document.body),
+            html: `Full document scanned (Size: ${document.body.getHTML.length})`,
+            stackTrace: getStackTrace(), 
+        });
         return []
     }
 
     let tbodyGet = table.getElementsByTagName("tbody");
     let tbody = tbodyGet.item(0);
     if (!tbody) {
-        console.log("IllegalState: <tbody> elements inside #table1 was 0.")
+        pe.newError({
+            errorType: "UnexpectedState",
+            message: "<tbody> elements inside the #table1 element should always be > 0",
+            received: "null",
+            expected: "<tbody> element",
+            elementPath: finder(table),
+            html: table.getHTML(),
+            stackTrace: getStackTrace(), 
+        })
         return []
     }
 
@@ -102,4 +124,9 @@ function getCurrentPage(): number {
     }
 
     return Number.parseInt(input.value);
+}
+
+function getStackTrace(): string {
+    const stackError = new Error("error made with the purpose to retreive the stack trace")
+    return stackError.stack ?? "";
 }
