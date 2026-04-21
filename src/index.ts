@@ -66,10 +66,6 @@ function grabCourseDataTable(pe: ParserErrorHandler): CourseRow[] {
 function parseTableRow(tableRow: HTMLTableRowElement, pe: ParserErrorHandler): CourseRow | null {
     /** Get a <td> element with the data-property attribute equal to pro: string */
     const getCell = (prop: string) => tableRow.querySelector<HTMLTableCellElement>(`td[data-property="${prop}"]`);
-    const failedToMsg = (msg: string) => console.warn(`Failed to ${msg} from element ${tableRow} on page ${getCurrentPage()} with id ${idStr}`);
-    const expectedWarn = (expected: string, actual: string, from: HTMLElement) => {
-        console.warn(`Expected ${expected} but got ${actual} from element ${from} on page ${getCurrentPage()} with id ${idStr}`) 
-    };
 
     // The data id is unique to every course element as assigned in banner and its how the scraper will identify them.
     // If we cannot find it, we should not continue to parse this row.
@@ -144,7 +140,6 @@ function parseTableRow(tableRow: HTMLTableRowElement, pe: ParserErrorHandler): C
 
     const courseNumber: number = Number.parseInt(getCell("courseNumber")?.textContent.trim() ?? "");
     if (isNaN(courseNumber)) {
-        failedToMsg("parse the course number")
         pe.newError({
             errorType: "StringParse",
             received: `NaN value for tag text content: ${courseNumber}`,
@@ -158,7 +153,6 @@ function parseTableRow(tableRow: HTMLTableRowElement, pe: ParserErrorHandler): C
 
     const sectionNumber: number = Number.parseInt(getCell("sequenceNumber")?.textContent.trim() ?? "");
     if (isNaN(sectionNumber)) {
-        failedToMsg("prase the sequence number")
         pe.newError({
             errorType: "StringParse",
             received: `NaN value for tag text content: ${sectionNumber}`,
@@ -172,7 +166,6 @@ function parseTableRow(tableRow: HTMLTableRowElement, pe: ParserErrorHandler): C
 
     const creditHours: number = Number.parseInt(getCell("creditHours")?.textContent.trim() ?? "");
     if (isNaN(creditHours)) {
-        failedToMsg("prase the credit hours")
         pe.newError({
             errorType: "StringParse",
             received: `NaN value in tag text content: ${creditHours}`,
