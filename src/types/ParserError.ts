@@ -2,9 +2,9 @@ export type ParseError = {
     /** The type of error present */
     errorType: ParserErrorType,
     /** Any additional context */
-    message: string,
+    message?: string,
     /** What state was present */
-    artifact: string,
+    received: string,
     /** What state was expected */
     expected: string,
     /** CSS selector or similar to find the object the error occurred on */
@@ -13,6 +13,8 @@ export type ParseError = {
     html: string,
     /** Stack trace from the code that encountered an error */
     stackTrace: string,
+    /** Page number error occurred on */
+    page: number,
 };
 
-export type ParserErrorType = "UnexpectedState";
+export type ParserErrorType = "UnexpectedState" | "MissingElement" | "StringParse";
