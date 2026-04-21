@@ -16,6 +16,7 @@
     "eslint": "^10.2.0"
   },
   "dependencies": {
-    "@medv/finder": "^4.0.2"
+    "@medv/finder": "^4.0.2",
+    "htmlfy": "^1.0.1"
   }
 }
