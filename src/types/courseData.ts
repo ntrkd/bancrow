@@ -55,7 +55,7 @@ export type Instructor = {
 
 export type Meeting = {
   /** Day of the meeting */
-  days: ("Sunday" | "Monday" | "Tuesday" | "Wednesday" | "Thursday" | "Friday" | "Saturday")[];
+  days: MeetingDays;
 
   startTime: TimeString;
   /** The end time of the course meeting */
@@ -67,7 +67,7 @@ export type Meeting = {
   /** Building the meeting takes place. If online is "Online" and room is "None" */
   building: string;
   /** Room number */
-  room: string;
+  room?: string;
 
   /** YYYY-MM-DD */
   startDate: string;
@@ -75,9 +75,26 @@ export type Meeting = {
   endDate: string;
 };
 
+export const DAYS_OF_WEEK = [
+  "sunday",
+  "monday",
+  "tuesday",
+  "wednesday",
+  "thursday",
+  "friday",
+  "saturday",
+] as const;
+
+export type MeetingDay = typeof DAYS_OF_WEEK[number];
+export type MeetingDays = MeetingDay[];
+
 // Helper types to define what two digits looks like
 export type Digit = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9";
 export type TwoDigits = `${Digit}${Digit}`;
 
 /** 24 Hour Time. Ex. 12:15, 15:45 */
 export type TimeString = `${TwoDigits}:${TwoDigits}`;
+
+export function isMeetingDay(day: string): day is MeetingDay {
+  return (DAYS_OF_WEEK as readonly string[]).includes(day);
+}
