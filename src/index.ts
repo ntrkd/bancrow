@@ -102,7 +102,7 @@ function parseTableRow(tableRow: HTMLTableRowElement, pe: ParserErrorHandler): C
         return null;
     }
 
-    const courseTitle: string | undefined = getCell("courseTitle")?.querySelector("a")?.textContent.trim();
+    const courseTitle: string = getCell("courseTitle")?.querySelector("a")?.textContent.trim() ?? "";
     if (!courseTitle) {
         pe.newError({
             errorType: "MissingElement",
@@ -128,7 +128,7 @@ function parseTableRow(tableRow: HTMLTableRowElement, pe: ParserErrorHandler): C
         });
     }
 
-    const subjectID: string | undefined = subjectWithDesc?.substring(0, 3); // [0] is the three letter code
+    const subjectID: string = subjectWithDesc?.substring(0, 3) ?? ""; // [0] is the three letter code
     if (!subjectID || subjectID.length != 3) {
         pe.newError({
             errorType: "StringParse",
@@ -140,7 +140,7 @@ function parseTableRow(tableRow: HTMLTableRowElement, pe: ParserErrorHandler): C
             page: getCurrentPage(),
         });
     }
-    const subjectDesc = subjectWithDesc?.substring(4); // The subject description
+    const subjectDesc = subjectWithDesc?.substring(4) ?? ""; // The subject description
 
     const courseNumber: number = Number.parseInt(getCell("courseNumber")?.textContent.trim() ?? "");
     if (isNaN(courseNumber)) {
@@ -194,7 +194,7 @@ function parseTableRow(tableRow: HTMLTableRowElement, pe: ParserErrorHandler): C
         });
     }
 
-    const term: string | undefined = getCell("term")?.textContent.trim();
+    const term: string | undefined = getCell("term")?.textContent.trim() ?? "";
     if (!term) {
         pe.newError({
             errorType: "MissingElement",
@@ -248,7 +248,7 @@ function parseTableRow(tableRow: HTMLTableRowElement, pe: ParserErrorHandler): C
         });
     }
 
-    const meetings: any[] = [];
+    const meetings: any[] = []; // TODO: fix this, should not be of any[] type
     const meetingCell = getCell("meetingTime");
     if (!meetingCell) {
         pe.newError({
@@ -429,7 +429,7 @@ function parseTableRow(tableRow: HTMLTableRowElement, pe: ParserErrorHandler): C
     }
 
     const scheduleTypeCell = getCell("scheduleType");
-    const scheduleType = scheduleTypeCell?.textContent.trim();
+    const scheduleType = scheduleTypeCell?.textContent.trim() ?? "";
 
     if (!scheduleTypeCell) {
         pe.newError({
@@ -466,7 +466,27 @@ function parseTableRow(tableRow: HTMLTableRowElement, pe: ParserErrorHandler): C
         didEmitError = true;
     }
 
-    return null;
+    const row: CourseRow = {
+        id: id,
+        errorTriggered: didEmitError,
+        title: courseTitle,
+        subject: subjectID,
+        subjectDesc: subjectDesc,
+        courseNumber: courseNumber,
+        sectionNumber: sectionNumber,
+        creditHours: creditHours,
+        crn: crn,
+        term: term,
+        instructor: instructors,
+        meetings: meetings,
+        campus: campus,
+        status: courseStatus,
+        scheduleType: scheduleType,
+        attributes: attributes,
+        linked: linked,
+    }
+
+    return row;
 }
 
 /**
