@@ -393,7 +393,7 @@ function parseTableRow(tableRow: HTMLTableRowElement, pe: ParserErrorHandler): C
     const fullRegex = /full/;
     const isFull = statusCell?.textContent.toLowerCase().search(fullRegex) !== -1;
 
-    const seatMatcher = /(\d*?) of (\d*?) seats remain\. (\d*?) of (\d*?) waitlist seats remain\./;
+    const seatMatcher = /(\d*?) of (\d*?) seats remain\. ?(\d*?) of (\d*?) waitlist seats remain\./;
     const seatAvailability = statusCell?.textContent.match(seatMatcher);
     let [seatsRemain, seatsTotal, waitRemain, waitTotal] = [-1, -1, -1, -1];
 
