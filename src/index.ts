@@ -448,6 +448,15 @@ function parseTableRow(tableRow: HTMLTableRowElement, pe: ParserErrorHandler): C
         }
     });
 
+    const linkedSection = getCell("linked");
+    const linked: string[] = [];
+    Array.from(attributeCell?.children ?? []).forEach((e) => {
+        const processed = e.textContent.trim();
+        if (processed !== "") {
+            linked.push(processed);
+        }
+    });
+
     // TODO: before constructing the final object, check if pe.getTotalErrors length has increased and if so set errorTriggered to true
     return null;
 }

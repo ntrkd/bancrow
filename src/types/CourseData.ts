@@ -37,8 +37,8 @@ export type CourseRow = {
   /** List of attributes assigned to the course */
   attributes: string[];
 
-  /** Whether there are any sections that are linked to this one */
-  linked?: boolean;
+  /** Sections that are linked to this one */
+  linked: string[];
 };
 
 export type Instructor = {
