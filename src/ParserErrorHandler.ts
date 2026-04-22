@@ -22,6 +22,10 @@ export class ParserErrorHandler {
     }
   }
 
+  getTotalErrors(): number {
+    return this.errors.length;
+  }
+
   /**
    * Converts a ParseError object into a string
    * @returns Stringified ParseError

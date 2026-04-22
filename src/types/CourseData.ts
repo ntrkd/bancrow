@@ -1,6 +1,7 @@
 export type CourseRow = {
   /** Banner assigned ID for a course */
   id: number;
+  errorTriggered: boolean;
 
   /** Full title of the course */
   title: string;
