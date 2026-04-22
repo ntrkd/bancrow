@@ -414,10 +414,10 @@ function parseTableRow(tableRow: HTMLTableRowElement, pe: ParserErrorHandler): C
         });
     } else {
         // The regex will only match numbers, so we are safe to parse without checking errors
-        seatsRemain = Number.parseInt(seatAvailability[0]);
-        seatsTotal = Number.parseInt(seatAvailability[1] ?? "");
-        waitRemain = Number.parseInt(seatAvailability[2] ?? "");
-        waitTotal = Number.parseInt(seatAvailability[3] ?? "");
+        seatsRemain = Number.parseInt(seatAvailability[1] ?? "");
+        seatsTotal = Number.parseInt(seatAvailability[2] ?? "");
+        waitRemain = Number.parseInt(seatAvailability[3] ?? "");
+        waitTotal = Number.parseInt(seatAvailability[4] ?? "");
     }
 
     const courseStatus: CourseStatus = {
@@ -452,9 +452,9 @@ function parseTableRow(tableRow: HTMLTableRowElement, pe: ParserErrorHandler): C
         }
     });
 
-    const linkedSection = getCell("linked");
+    const linkedSectionCell = getCell("linked");
     const linked: string[] = [];
-    Array.from(attributeCell?.children ?? []).forEach((e) => {
+    Array.from(linkedSectionCell?.children ?? []).forEach((e) => {
         const processed = e.textContent.trim();
         if (processed !== "") {
             linked.push(processed);
