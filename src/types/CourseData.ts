@@ -12,7 +12,7 @@ export type CourseRow = {
   /** The number portion of course titles CGS-1000 */
   courseNumber: number;
   /** Usually has been 0, not sure of the purpose */
-  sequenceNumber: number;
+  sectionNumber: number;
 
   /** Number of credit hours */
   creditHours: number;
