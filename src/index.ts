@@ -1,6 +1,6 @@
 import { ParserErrorHandler } from "./ParserErrorHandler";
-import { isMeetingDay } from "./types/courseData";
-import type { CourseRow, CourseStatus, Instructor, Meeting, MeetingDays } from "./types/courseData";
+import { isMeetingDay } from "./types/CourseData";
+import type { CourseRow, CourseStatus, Instructor, Meeting, MeetingDays } from "./types/CourseData";
 import { finder } from '@medv/finder';
 
 setTimeout(() => {
