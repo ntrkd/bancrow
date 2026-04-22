@@ -3,7 +3,7 @@ import type { ParseError } from "./types/ParserError";
 import { prettify } from 'htmlfy';
 
 export class ParserErrorHandler {
-  errors: ParseError[] = [];
+  private errors: ParseError[] = [];
 
   /**
    * Add a new error
@@ -22,7 +22,26 @@ export class ParserErrorHandler {
     }
   }
 
-  getTotalErrors(): number {
+  /**
+   * Get errors
+   * @returns all the stored errors
+   */
+  getErrors(): ParseError[] {
+    return this.errors;
+  }
+
+  /**
+   * Merges another ParseError array
+   */
+  mergeErrorList(pe: ParseError[]) {
+    this.errors.push(...pe);
+  }
+
+  /**
+   * Get the number of errors
+   * @returns total amount of errors captured
+   */
+  getErrorAmount(): number {
     return this.errors.length;
   }
 

@@ -11,7 +11,9 @@ async function main() {
     const pe = new ParserErrorHandler();
 
     await showAllCourses(); // Wait for the new page to load
-    const data = grabCourseDataTable(pe);
+    const pagePE = new ParserErrorHandler();
+    const data = grabCourseDataTable(pagePE);
+    pe.mergeErrorList(pagePE.getErrors());
 
     pe.flush();
 }
@@ -53,7 +55,9 @@ function grabCourseDataTable(pe: ParserErrorHandler): CourseRow[] {
     }
 
     tbody.querySelectorAll("tr").forEach(tr => {
-        parseTableRow(tr, pe);
+        const rowPE = new ParserErrorHandler();
+        parseTableRow(tr, rowPE);
+        pe.mergeErrorList(rowPE.getErrors());
     });
 
     return [];
@@ -457,7 +461,11 @@ function parseTableRow(tableRow: HTMLTableRowElement, pe: ParserErrorHandler): C
         }
     });
 
-    // TODO: before constructing the final object, check if pe.getTotalErrors length has increased and if so set errorTriggered to true
+    let didEmitError: boolean = false;
+    if (pe.getErrorAmount() > 0) {
+        didEmitError = true;
+    }
+
     return null;
 }
 
