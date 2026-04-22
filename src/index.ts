@@ -439,9 +439,14 @@ function parseTableRow(tableRow: HTMLTableRowElement, pe: ParserErrorHandler): C
         })
     }
 
-
-
-    // getCell("attribute")?.querySelectorAll("span").forEach((e) => console.log(e.textContent)) -> just make sure the string is not empty
+    const attributeCell = getCell("attribute");
+    const attributes: string[] = [];
+    attributeCell?.querySelectorAll("span").forEach((e) => {
+        const processed = e.textContent.trim();
+        if (processed !== "") {
+            attributes.push(processed);
+        }
+    });
 
     // TODO: before constructing the final object, check if pe.getTotalErrors length has increased and if so set errorTriggered to true
     return null;
