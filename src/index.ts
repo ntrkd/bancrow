@@ -424,7 +424,26 @@ function parseTableRow(tableRow: HTMLTableRowElement, pe: ParserErrorHandler): C
         waitlistTotal: waitTotal,
     }
 
+    const scheduleTypeCell = getCell("scheduleType");
+    const scheduleType = scheduleTypeCell?.textContent.trim();
+
+    if (!scheduleTypeCell) {
+        pe.newError({
+            errorType: "MissingElement",
+            received: "Undefined",
+            expected: "Valid HTML element",
+            elementPath: finder(tableRow),
+            html: tableRow.getHTML(),
+            stackTrace: getStackTrace(),
+            page: getCurrentPage(),
+        })
+    }
+
+
+
     // getCell("attribute")?.querySelectorAll("span").forEach((e) => console.log(e.textContent)) -> just make sure the string is not empty
+
+    // TODO: before constructing the final object, check if pe.getTotalErrors length has increased and if so set errorTriggered to true
     return null;
 }
 
