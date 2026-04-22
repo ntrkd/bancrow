@@ -1,6 +1,6 @@
 import { ParserErrorHandler } from "./ParserErrorHandler";
 import { isMeetingDay } from "./types/courseData";
-import type { CourseRow, Instructor, Meeting, MeetingDays } from "./types/courseData";
+import type { CourseRow, CourseStatus, Instructor, Meeting, MeetingDays } from "./types/courseData";
 import { finder } from '@medv/finder';
 
 setTimeout(() => {
@@ -258,7 +258,7 @@ function parseTableRow(tableRow: HTMLTableRowElement, pe: ParserErrorHandler): C
         });
     }
 
-    if (meetingCell instanceof HTMLTableCellElement) { // TODO: doesnt seem to be why we have extra array in meetings, investigate
+    if (meetingCell instanceof HTMLTableCellElement) {
         Array.from(meetingCell?.children).forEach((meeting) => {
             const isOnline = meeting.textContent?.includes("Building: Online") ?? false;
             let type, building, room, startDateUnparsed, endDateUnparsed, meetingTimes: string = "";
@@ -361,9 +361,70 @@ function parseTableRow(tableRow: HTMLTableRowElement, pe: ParserErrorHandler): C
         });
     }
 
-    // getCell("attribute")?.querySelectorAll("span").forEach((e) => console.log(e.textContent)) -> just make sure the string is not empty
+    const campusCell = getCell("campus");
+    const campus = campusCell?.textContent.trim() ?? "";
 
-    console.log(meetings)
+    if (!campusCell) {
+        pe.newError({
+            errorType: "MissingElement",
+            received: "Undefined element",
+            expected: "Valid element",
+            elementPath: finder(tableRow),
+            html: tableRow.getHTML(),
+            stackTrace: getStackTrace(),
+            page: getCurrentPage(),
+        });
+    }
+
+    const statusCell = getCell("status");
+
+    if (!statusCell) {
+        pe.newError({
+            errorType: "MissingElement",
+            received: "Undefined element",
+            expected: "Valid element",
+            elementPath: finder(tableRow),
+            html: tableRow.getHTML(),
+            stackTrace: getStackTrace(),
+            page: getCurrentPage(),
+        });
+    }
+
+    const fullRegex = /full/;
+    const isFull = statusCell?.textContent.toLowerCase().search(fullRegex) !== -1;
+
+    const seatMatcher = /(\d*?) of (\d*?) seats remain\. (\d*?) of (\d*?) waitlist seats remain\./;
+    const seatAvailability = statusCell?.textContent.match(seatMatcher);
+    let [seatsRemain, seatsTotal, waitRemain, waitTotal] = [-1, -1, -1, -1];
+
+    // One element is the full match, the other 4 should be the capture groups.
+    if (!seatAvailability || seatAvailability.length != 5) {
+        pe.newError({
+            errorType: "StringParse",
+            received: `Array of ${seatAvailability}`,
+            expected: "Exactly 5 elements in the regex matcher return",
+            elementPath: finder(statusCell ?? tableRow),
+            html: statusCell?.getHTML() ?? "",
+            stackTrace: getStackTrace(),
+            page: getCurrentPage(),
+        });
+    } else {
+        // The regex will only match numbers, so we are safe to parse without checking errors
+        seatsRemain = Number.parseInt(seatAvailability[0]);
+        seatsTotal = Number.parseInt(seatAvailability[1] ?? "");
+        waitRemain = Number.parseInt(seatAvailability[2] ?? "");
+        waitTotal = Number.parseInt(seatAvailability[3] ?? "");
+    }
+
+    const courseStatus: CourseStatus = {
+        isFull: isFull,
+        seatsRemaining: seatsRemain,
+        totalSeats: seatsTotal,
+        waitlistRemaining: waitRemain,
+        waitlistTotal: waitTotal,
+    }
+
+    // getCell("attribute")?.querySelectorAll("span").forEach((e) => console.log(e.textContent)) -> just make sure the string is not empty
     return null;
 }
 

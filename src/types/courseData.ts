@@ -30,13 +30,7 @@ export type CourseRow = {
   campus: string;
 
   /** Status of the section at time of scraping */
-  status: {
-    isFull: boolean;
-    seatsRemaining: number;
-    totalSeats: number;
-    waitlistRemaining: number;
-    waitlistTotal: number;
-  };
+  status: CourseStatus;
 
   scheduleType: string;
   /** List of attributes assigned to the course */
@@ -74,6 +68,14 @@ export type Meeting = {
   /** YYYY-MM-DD */
   endDate: string;
 };
+
+export type CourseStatus = {
+  isFull: boolean;
+  seatsRemaining: number;
+  totalSeats: number;
+  waitlistRemaining: number;
+  waitlistTotal: number;
+}
 
 export const DAYS_OF_WEEK = [
   "sunday",
