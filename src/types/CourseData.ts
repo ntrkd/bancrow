@@ -17,7 +17,7 @@ export type CourseRow = {
   /** Number of credit hours */
   creditHours: number;
   /** Course Registration Number. Uniquely identifies a section. */
-  crn: string;
+  crn: number;
   /** The term it takes place. 'Season YYYY'. e.g. Spring 2025, Fall 2027, Summer 2026 */
   term: string;
 
