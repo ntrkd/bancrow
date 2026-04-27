@@ -355,6 +355,42 @@ function parseTableRow(tableRow: HTMLTableRowElement, pe: ParserErrorHandler): C
                     }
                 })
                 
+                let startDateParsed: ParsedDate = {
+                    year: -1,
+                    month: asMonthNumber(1),
+                    day: asDayNumber(1)
+                };
+
+                let endDateParsed: ParsedDate = {
+                    year: -1,
+                    month: asMonthNumber(1),
+                    day: asDayNumber(1)
+                };
+
+                try {
+                    startDateParsed = parseDateString(startDateUnparsed);
+                    endDateParsed = parseDateString(endDateUnparsed);
+                } catch(e: unknown) {
+                    let msg: string = "";
+
+                    if (typeof e === "string") {
+                        msg = e;
+                    } else if (e instanceof Error) {
+                        msg = e.message;
+                    }
+
+                    pe.newError({
+                        errorType: "StringParse",
+                        message: msg,
+                        received: `${startDateUnparsed} and ${endDateUnparsed}`,
+                        expected: "A valid MM/DD/YYYY string",
+                        elementPath: finder(meeting),
+                        html: meeting.getHTML(),
+                        stackTrace: getStackTrace(),
+                        page: getCurrentPage(),
+                    });
+                }
+
                 let constructedMeeting = {
                     days: meetingDays,
                     startTime: meetingTimes,
@@ -362,8 +398,8 @@ function parseTableRow(tableRow: HTMLTableRowElement, pe: ParserErrorHandler): C
                     type: type,
                     building: building,
                     room: room,
-                    startDate: startDateUnparsed,
-                    endDate: endDateUnparsed
+                    startDate: startDateParsed,
+                    endDate: endDateParsed
                 };
                 meetings.push(constructedMeeting)
             }
