@@ -495,6 +495,36 @@ function parseTableRow(tableRow: HTMLTableRowElement, pe: ParserErrorHandler): C
 }
 
 /**
+ * Parses the raw string of format MM/DD/YYYY (MDY) into a ParsedDate object.
+ * If anything goes wrong, throws errors. Capture it in ParseError.
+ * @param unparsed the string to parse
+ * @returns ParsedDate object
+ */
+function parseDateString(unparsed: string): ParsedDate {
+    let split: string[] = unparsed.split("/");
+    if (split.length != 3) {
+        throw new Error(`Splitting the unparsed date string (${unparsed}) by / did not yield exactly 3 elements.`);
+    }
+
+    // if the month and day are NaN (don't parse properly) then their type guards will throw errors
+    const month: MonthNumber = asMonthNumber(Number.parseInt(split[0] ?? ""));
+    const day: DayNumber = asDayNumber(Number.parseInt(split[1] ?? ""));
+    const year: number = Number.parseInt(split[2] ?? "");
+
+    if (Number.isNaN(year)) {
+        throw new Error(`The parsed year was NaN: ${unparsed}`);
+    }
+
+    const parsed: ParsedDate = {
+        year: year,
+        month: month,
+        day: day,
+    }
+
+    return parsed;
+}
+
+/**
  * Helper method to await pause until the results page loads.
  * @returns a promise that is only accepted once the results element is made visible.
  */
