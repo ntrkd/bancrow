@@ -23,6 +23,7 @@ async function main() {
  * @returns an array of objects containing the extracted data
  */
 function grabCourseDataTable(pe: ParserErrorHandler): CourseRow[] {
+    const rowArray: CourseRow[] = [];
     let table = document.getElementById("table1");
     if (!table) {
         pe.newError({
@@ -35,7 +36,7 @@ function grabCourseDataTable(pe: ParserErrorHandler): CourseRow[] {
             stackTrace: getStackTrace(), 
             page: getCurrentPage(),
         });
-        return []
+        return [];
     }
 
     let tbodyGet = table.getElementsByTagName("tbody");
@@ -51,16 +52,20 @@ function grabCourseDataTable(pe: ParserErrorHandler): CourseRow[] {
             stackTrace: getStackTrace(), 
             page: getCurrentPage(),
         })
-        return []
+        return [];
     }
 
     tbody.querySelectorAll("tr").forEach(tr => {
         const rowPE = new ParserErrorHandler();
-        parseTableRow(tr, rowPE);
+        const rowData = parseTableRow(tr, rowPE);
+        if (rowData) {
+            rowArray.push(rowData);
+        }
+
         pe.mergeErrorList(rowPE.getErrors());
     });
 
-    return [];
+    return rowArray;
 }
 
 /**
