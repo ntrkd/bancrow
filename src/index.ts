@@ -270,7 +270,7 @@ function parseTableRow(tableRow: HTMLTableRowElement, pe: ParserErrorHandler): C
     if (meetingCell instanceof HTMLTableCellElement) {
         Array.from(meetingCell?.children).forEach((meeting) => {
             const isOnline = meeting.textContent?.includes("Building: Online") ?? false;
-            let type, building, room, startDateUnparsed, endDateUnparsed, meetingTimes: string = "";
+            let [ type, building, room, startDateUnparsed, endDateUnparsed, meetingTimes ] = [ "", "", "", "", "", ""];
             let meetingDays: MeetingDays = [];
 
             if(meeting instanceof HTMLDivElement && meeting.classList.contains("meeting")) {
