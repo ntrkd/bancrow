@@ -563,6 +563,51 @@ function getCurrentPage(): number {
     return Number.parseInt(input.value);
 }
 
+/**
+ * Sets the current page to the one requested
+ * @param input the paginator input element
+ * @param pgNum page to navigate to
+ */
+async function setCurrentPage(input: HTMLInputElement, pgNum: number): Promise<void> {
+    // TODO: handle when the page number is out of bounds, it throws no errors, but woudl silent fail
+    return new Promise((resolve) => {
+
+        // Native getter and setter for the 'value' element. 
+        // jQuery and other libraries might redefine this
+        // so it's good we get the native function for it
+        const descriptor = Object.getOwnPropertyDescriptor(
+            HTMLInputElement.prototype,
+            'value'
+        );
+    
+        if (!descriptor || !descriptor.set) {
+            return Promise.reject(new Error('unable to get native value setter for paginator'))
+        }
+    
+        descriptor.set.call(input, pgNum);
+    
+        input.dispatchEvent(new Event('change', { bubbles: true }));
+    
+        // When the spinner's display property gets set to "none" the page has finished loading
+        const targetNode = document.getElementById("spinner");
+        if (!targetNode) {
+            return Promise.reject(new Error("unable to get the element with id spinner"))
+        }
+    
+        const callback = (mutationList: MutationRecord[], observer: MutationObserver) => {
+            for (const mutation of mutationList) {
+                if (mutation.type === "attributes" && window.getComputedStyle(targetNode).display === "none") {
+                    observer.disconnect();
+                    resolve();
+                }
+            }
+        };
+    
+        const observer = new MutationObserver(callback);
+        observer.observe(targetNode, { attributes: true, childList: true, subtree: true });
+    })
+}
+
 function getStackTrace(): string {
     const stackError = new Error("error made with the purpose to retreive the stack trace")
     return stackError.stack ?? "";
