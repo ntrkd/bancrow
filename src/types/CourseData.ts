@@ -64,10 +64,8 @@ export type Meeting = {
   /** Room number */
   room?: string;
 
-  /** YYYY-MM-DD */
-  startDate: string;
-  /** YYYY-MM-DD */
-  endDate: string;
+  startDate: ParsedDate;
+  endDate: ParsedDate;
 };
 
 export type CourseStatus = {
@@ -76,6 +74,40 @@ export type CourseStatus = {
   totalSeats: number;
   waitlistRemaining: number;
   waitlistTotal: number;
+}
+
+export type ParsedDate = {
+  year: number,
+  month: MonthNumber,
+  day: DayNumber,
+}
+
+export type DayNumber = NumberInRange<1, 31>;
+export function asDayNumber(value: number): DayNumber {
+  return inRange(value, 1, 31);
+}
+
+export type MonthNumber = NumberInRange<1, 12>;
+export function asMonthNumber(value: number): MonthNumber {
+  return inRange(value, 1, 12);
+}
+
+// Following Range types taken from: https://dev.to/56_kode/advanced-number-typing-in-typescript-4cli
+// Type to represent a number in a range
+type NumberInRange<Min extends number, Max extends number> = number & {
+  __brand: `NumberInRange<${Min}, ${Max}>`;
+};
+
+// Function to validate that a number is in a range
+function inRange<Min extends number, Max extends number>(
+  value: number, 
+  min: Min, 
+  max: Max
+): NumberInRange<Min, Max> {
+  if (value >= min && value <= max) {
+    return value as NumberInRange<Min, Max>;
+  }
+  throw new Error(`Value ${value} is not in range [${min}, ${max}]`);
 }
 
 export const DAYS_OF_WEEK = [
