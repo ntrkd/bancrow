@@ -19,7 +19,7 @@ async function main() {
 }
 
 /**
- * Expects to be called on the results page.
+ * Grabs the course data from the current page.
  * @returns an array of objects containing the extracted data
  */
 function grabCourseDataTable(pe: ParserErrorHandler): CourseRow[] {
