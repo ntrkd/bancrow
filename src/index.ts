@@ -310,7 +310,7 @@ function parseTableRow(tableRow: HTMLTableRowElement, pe: ParserErrorHandler): C
                 const meetingStartUnparsed = meetingSplit[0]?.trim();
                 const meetingEndUnparsed = meetingSplit[1]?.trim();
 
-                if (meetingSplit.length !== 2 || !meetingStartUnparsed || !meetingEndUnparsed) {
+                if (!isOnline && (meetingSplit.length !== 2 || !meetingStartUnparsed || !meetingEndUnparsed)) {
                     pe.newError({
                         errorType: "StringParse",
                         received: `${meetingTimes}`,
@@ -337,26 +337,28 @@ function parseTableRow(tableRow: HTMLTableRowElement, pe: ParserErrorHandler): C
                 let startTime24Hour: Time24Hour = { hour: asHourNumber(0), minute: asMinuteNumber(0) };
                 let endTime24Hour: Time24Hour = { hour: asHourNumber(0), minute: asMinuteNumber(0) };
 
-                try {
-                    startTime24Hour = {
-                        hour: asHourNumber(startHourParsed),
-                        minute: asMinuteNumber(startMinParsed),
+                if (!isOnline) {
+                    try {
+                        startTime24Hour = {
+                            hour: asHourNumber(startHourParsed),
+                            minute: asMinuteNumber(startMinParsed),
+                        }
+                        endTime24Hour = {
+                            hour: asHourNumber(endHourParsed),
+                            minute: asMinuteNumber(endMinParsed),
+                        }
+                    } catch {
+                        pe.newError({
+                            errorType: "StringParse",
+                            received: `${meetingTimes}`,
+                            expected: "A parsed result consistent with hour (0-24) and minute (0-60) ranges",
+                            elementPath: finder(meeting),
+                            html: meeting.getHTML(),
+                            stackTrace: getStackTrace(),
+                            page: getCurrentPage()
+                        });
                     }
-                    endTime24Hour = {
-                        hour: asHourNumber(endHourParsed),
-                        minute: asMinuteNumber(endMinParsed),
-                    }
-                } catch {
-                    pe.newError({
-                        errorType: "StringParse",
-                        received: `${meetingTimes}`,
-                        expected: "A parsed result consistent with hour (0-24) and minute (0-60) ranges",
-                        elementPath: finder(meeting),
-                        html: meeting.getHTML(),
-                        stackTrace: getStackTrace(),
-                        page: getCurrentPage()
-                    });
-                }
+                }    
 
                 Array.from(meeting.children).forEach((span) => {
                     if ((!(span instanceof HTMLSpanElement)) || span.classList.contains("ui-pillbox")) { return; }
@@ -462,6 +464,7 @@ function parseTableRow(tableRow: HTMLTableRowElement, pe: ParserErrorHandler): C
                     type: type,
                     building: building,
                     room: room,
+                    isOnline: isOnline,
                     startDate: startDateParsed,
                     endDate: endDateParsed
                 };

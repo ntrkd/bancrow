@@ -60,10 +60,12 @@ export type Meeting = {
   /** e.g. Class, Breakout */
   type: string;
 
-  /** Building the meeting takes place. If online is "Online" and room is "None" */
+  /** Building the meeting takes place. Is online if building is "Online" and room is "None" */
   building: string;
   /** Room number */
-  room?: string;
+  room: string;
+  /** Whether the class is online */
+  isOnline: boolean;
 
   startDate: ParsedDate;
   endDate: ParsedDate;
