@@ -11,10 +11,22 @@ async function main() {
     const pe = new ParserErrorHandler();
 
     await showAllCourses(); // Wait for the new page to load
-    const pagePE = new ParserErrorHandler();
-    const data = grabCourseDataTable(pagePE);
-    pe.mergeErrorList(pagePE.getErrors());
 
+    const totalPages = 1;
+    for (let i = 1; i <= totalPages; i++) {
+        let pagePE = new ParserErrorHandler();
+
+        const paginator = document.querySelector<HTMLInputElement>(".page-number");
+        if (!paginator) {
+            throw new Error("Unable to find the paginator element.")
+        }
+
+        await setCurrentPage(paginator, i);
+        const data = grabCourseDataTable(pagePE);
+        pe.mergeErrorList(pagePE.getErrors());
+        console.log(data);
+    }
+    
     pe.flush();
 }
 
@@ -443,7 +455,7 @@ function parseTableRow(tableRow: HTMLTableRowElement, pe: ParserErrorHandler): C
                     });
                 }
 
-                let constructedMeeting = {
+                let constructedMeeting: Meeting = {
                     days: meetingDays,
                     startTime: startTime24Hour,
                     endTime: endTime24Hour,
