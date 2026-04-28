@@ -52,9 +52,10 @@ export type Meeting = {
   /** Day of the meeting */
   days: MeetingDays;
 
-  startTime: TimeString;
+  /** The start time of the course meeting */
+  startTime: Time24Hour;
   /** The end time of the course meeting */
-  endTime: TimeString;
+  endTime: Time24Hour;
 
   /** e.g. Class, Breakout */
   type: string;
@@ -74,6 +75,21 @@ export type CourseStatus = {
   totalSeats: number;
   waitlistRemaining: number;
   waitlistTotal: number;
+}
+
+export type Time24Hour = {
+  hour: HourNumber,
+  minute: MinuteNumber,
+}
+
+export type HourNumber = NumberInRange<0, 24>;
+export function asHourNumber(value: number): HourNumber {
+  return inRange(value, 0, 24);
+}
+
+export type MinuteNumber = NumberInRange<0, 60>;
+export function asMinuteNumber(value: number): MinuteNumber {
+  return inRange(value, 0, 60);
 }
 
 export type ParsedDate = {
@@ -122,13 +138,6 @@ export const DAYS_OF_WEEK = [
 
 export type MeetingDay = typeof DAYS_OF_WEEK[number];
 export type MeetingDays = MeetingDay[];
-
-// Helper types to define what two digits looks like
-export type Digit = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9";
-export type TwoDigits = `${Digit}${Digit}`;
-
-/** 24 Hour Time. Ex. 12:15, 15:45 */
-export type TimeString = `${TwoDigits}:${TwoDigits}`;
 
 export function isMeetingDay(day: string): day is MeetingDay {
   return (DAYS_OF_WEEK as readonly string[]).includes(day);
