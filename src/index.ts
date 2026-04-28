@@ -1,6 +1,6 @@
 import { ParserErrorHandler } from "./ParserErrorHandler";
-import { isMeetingDay } from "./types/CourseData";
-import type { CourseRow, CourseStatus, Instructor, Meeting, MeetingDays } from "./types/CourseData";
+import { asDayNumber, asHourNumber, asMinuteNumber, asMonthNumber, isMeetingDay } from "./types/CourseData";
+import type { CourseRow, CourseStatus, DayNumber, Instructor, Meeting, MeetingDays, MonthNumber, ParsedDate, Time24Hour } from "./types/CourseData";
 import { finder } from '@medv/finder';
 
 setTimeout(() => {
@@ -253,7 +253,7 @@ function parseTableRow(tableRow: HTMLTableRowElement, pe: ParserErrorHandler): C
         });
     }
 
-    const meetings: any[] = []; // TODO: fix this, should not be of any[] type
+    const meetings: Meeting[] = [];
     const meetingCell = getCell("meetingTime");
     if (!meetingCell) {
         pe.newError({
@@ -294,6 +294,58 @@ function parseTableRow(tableRow: HTMLTableRowElement, pe: ParserErrorHandler): C
                 }
 
                 meetingTimes = meeting.querySelector(".ui-pillbox")?.nextSibling?.textContent?.trim() ?? ""; // Next to convert this into proper 24 HR times
+                const meetingSplit = meetingTimes.split("-");
+                const meetingStartUnparsed = meetingSplit[0]?.trim();
+                const meetingEndUnparsed = meetingSplit[1]?.trim();
+
+                if (meetingSplit.length !== 2 || !meetingStartUnparsed || !meetingEndUnparsed) {
+                    pe.newError({
+                        errorType: "StringParse",
+                        received: `${meetingTimes}`,
+                        expected: "Exactly two valid elements after splitting by -",
+                        elementPath: finder(meeting),
+                        html: meeting.getHTML(),
+                        stackTrace: getStackTrace(),
+                        page: getCurrentPage()
+                    });
+                }
+
+                const pmMatcher = /pm/mi // if its matched, its PM else its AM
+
+                const meetingStartIsPM: boolean = meetingStartUnparsed?.match(pmMatcher)?.length === 1 ? true : false;
+                const startHourMinSplit = (meetingStartUnparsed?.substring(0, 5) ?? "").split(":");
+                const startHourParsed = Number.parseInt(startHourMinSplit[0] ?? "") + (meetingStartIsPM ? 12 : 0);
+                const startMinParsed = Number.parseInt(startHourMinSplit[1] ?? "");
+
+                const meetingEndIsPM: boolean = meetingEndUnparsed?.match(pmMatcher)?.length === 1 ? true : false;
+                const endHourMinSplit = (meetingEndUnparsed?.substring(0, 5) ?? "").split(":");
+                const endHourParsed = Number.parseInt(endHourMinSplit[0] ?? "") + (meetingEndIsPM ? 12 : 0);
+                const endMinParsed = Number.parseInt(endHourMinSplit[1] ?? "");
+
+                let startTime24Hour: Time24Hour = { hour: asHourNumber(0), minute: asMinuteNumber(0) };
+                let endTime24Hour: Time24Hour = { hour: asHourNumber(0), minute: asMinuteNumber(0) };
+
+                try {
+                    startTime24Hour = {
+                        hour: asHourNumber(startHourParsed),
+                        minute: asMinuteNumber(startMinParsed),
+                    }
+                    endTime24Hour = {
+                        hour: asHourNumber(endHourParsed),
+                        minute: asMinuteNumber(endMinParsed),
+                    }
+                } catch {
+                    pe.newError({
+                        errorType: "StringParse",
+                        received: `${meetingTimes}`,
+                        expected: "A parsed result consistent with hour (0-24) and minute (0-60) ranges",
+                        elementPath: finder(meeting),
+                        html: meeting.getHTML(),
+                        stackTrace: getStackTrace(),
+                        page: getCurrentPage()
+                    });
+                }
+
                 Array.from(meeting.children).forEach((span) => {
                     if ((!(span instanceof HTMLSpanElement)) || span.classList.contains("ui-pillbox")) { return; }
 
@@ -393,8 +445,8 @@ function parseTableRow(tableRow: HTMLTableRowElement, pe: ParserErrorHandler): C
 
                 let constructedMeeting = {
                     days: meetingDays,
-                    startTime: meetingTimes,
-                    endTime: meetingTimes,
+                    startTime: startTime24Hour,
+                    endTime: endTime24Hour,
                     type: type,
                     building: building,
                     room: room,
