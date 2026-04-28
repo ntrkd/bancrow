@@ -326,12 +326,20 @@ function parseTableRow(tableRow: HTMLTableRowElement, pe: ParserErrorHandler): C
 
                 const meetingStartIsPM: boolean = meetingStartUnparsed?.match(pmMatcher)?.length === 1 ? true : false;
                 const startHourMinSplit = (meetingStartUnparsed?.substring(0, 5) ?? "").split(":");
-                const startHourParsed = Number.parseInt(startHourMinSplit[0] ?? "") + (meetingStartIsPM ? 12 : 0);
+                const startHourParsed12Hr = Number.parseInt(startHourMinSplit[0] ?? "");
+                let startHourParsed = startHourParsed12Hr;
+                if (meetingStartIsPM && startHourParsed12Hr != 12) {
+                    startHourParsed += 12;   
+                }
                 const startMinParsed = Number.parseInt(startHourMinSplit[1] ?? "");
 
                 const meetingEndIsPM: boolean = meetingEndUnparsed?.match(pmMatcher)?.length === 1 ? true : false;
                 const endHourMinSplit = (meetingEndUnparsed?.substring(0, 5) ?? "").split(":");
-                const endHourParsed = Number.parseInt(endHourMinSplit[0] ?? "") + (meetingEndIsPM ? 12 : 0);
+                const endHourParsed12Hr = Number.parseInt(endHourMinSplit[0] ?? "");
+                let endHourParsed = endHourParsed12Hr;
+                if (meetingEndIsPM && endHourParsed12Hr != 12) {
+                    endHourParsed += 12;   
+                }
                 const endMinParsed = Number.parseInt(endHourMinSplit[1] ?? "");
 
                 let startTime24Hour: Time24Hour = { hour: asHourNumber(0), minute: asMinuteNumber(0) };

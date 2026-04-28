@@ -84,9 +84,9 @@ export type Time24Hour = {
   minute: MinuteNumber,
 }
 
-export type HourNumber = NumberInRange<0, 24>;
+export type HourNumber = NumberInRange<0, 23>;
 export function asHourNumber(value: number): HourNumber {
-  return inRange(value, 0, 24);
+  return inRange(value, 0, 23);
 }
 
 export type MinuteNumber = NumberInRange<0, 60>;
