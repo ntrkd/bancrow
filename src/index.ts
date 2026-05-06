@@ -2,6 +2,7 @@ import { ParserErrorHandler } from "./ParserErrorHandler";
 import { asDayNumber, asHourNumber, asMinuteNumber, asMonthNumber, isMeetingDay } from "./types/CourseData";
 import type { CourseRow, CourseStatus, DayNumber, Instructor, Meeting, MeetingDays, MonthNumber, ParsedDate, Time24Hour } from "./types/CourseData";
 import { finder } from '@medv/finder';
+import { ControlPanelCSS, ControlPanelHTML, ControlPanelJS } from "./templates/ControlPanel";
 
 setTimeout(() => {
     main();
@@ -9,6 +10,16 @@ setTimeout(() => {
 
 async function main() {
     const pe = new ParserErrorHandler();
+    
+    const panelStyles = document.createElement('style');
+    panelStyles.innerText = ControlPanelCSS;
+    document.body.prepend(panelStyles);
+
+    const panelElement = document.createElement('div');
+    panelElement.innerHTML = ControlPanelHTML;
+    document.body.prepend(panelElement);
+
+    ControlPanelJS();
 
     await showAllCourses(); // Wait for the new page to load
 
