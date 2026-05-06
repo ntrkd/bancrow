@@ -1,7 +1,7 @@
 export const ControlPanelJS = (buttonPressCallback: () => void) => {
   const startBtn = document.getElementById("ctrl-panel-start");
   if (!startBtn) { return; }
-  startBtn.addEventListener('click', buttonPressCallback);
+  startBtn.addEventListener('click', buttonPressCallback, { once: true });
 
   let newX = 0, newY = 0, startX = 0, startY = 0;
 
