@@ -4,22 +4,19 @@ import type { CourseRow, CourseStatus, DayNumber, Instructor, Meeting, MeetingDa
 import { finder } from '@medv/finder';
 import { ControlPanelCSS, ControlPanelHTML, ControlPanelJS } from "./templates/ControlPanel";
 
-setTimeout(() => {
-    main();
-}, 1000);
+const panelStyles = document.createElement('style');
+panelStyles.innerText = ControlPanelCSS;
+document.body.prepend(panelStyles);
+
+const panelElement = document.createElement('div');
+panelElement.innerHTML = ControlPanelHTML;
+document.body.prepend(panelElement);
+
+ControlPanelJS(() => { main() });
 
 async function main() {
     const pe = new ParserErrorHandler();
     
-    const panelStyles = document.createElement('style');
-    panelStyles.innerText = ControlPanelCSS;
-    document.body.prepend(panelStyles);
-
-    const panelElement = document.createElement('div');
-    panelElement.innerHTML = ControlPanelHTML;
-    document.body.prepend(panelElement);
-
-    ControlPanelJS();
 
     await showAllCourses(); // Wait for the new page to load
 

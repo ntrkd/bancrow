@@ -1,4 +1,8 @@
-export const ControlPanelJS = () => {
+export const ControlPanelJS = (buttonPressCallback: () => void) => {
+  const startBtn = document.getElementById("ctrl-panel-start");
+  if (!startBtn) { return; }
+  startBtn.addEventListener('click', buttonPressCallback);
+
   let newX = 0, newY = 0, startX = 0, startY = 0;
 
   const card = document.getElementById('control-panel-decor');
@@ -59,7 +63,7 @@ export const ControlPanelHTML = `<div class="card-container" id="control-panel-c
     CONTROL PANEL
     </div>
     <div class="card-body">
-      <button class="card-start">
+      <button class="card-start" id="ctrl-panel-start">
         START
       </button>
       <div class="scraped-counter">
