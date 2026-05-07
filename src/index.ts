@@ -3,6 +3,7 @@ import { asDayNumber, asHourNumber, asMinuteNumber, asMonthNumber, isMeetingDay 
 import type { CourseRow, CourseStatus, DayNumber, Instructor, Meeting, MeetingDays, MonthNumber, ParsedDate, Time24Hour } from "./types/CourseData";
 import { finder } from '@medv/finder';
 import { ControlPanelCSS, ControlPanelHTML, ControlPanelJS } from "./templates/ControlPanel";
+import { IndexedDBStore } from "./IndexedDBHandler";
 
 const panelStyles = document.createElement('style');
 panelStyles.innerText = ControlPanelCSS;
@@ -16,11 +17,23 @@ ControlPanelJS(() => { main() });
 
 async function main() {
     const pe = new ParserErrorHandler();
+    const IndexedDB = new IndexedDBStore("bancrow", 1);
+    IndexedDB.open(["scraped"]);
     
-
     await showAllCourses(); // Wait for the new page to load
 
-    const totalPages = 1;
+    "ctrl-panel-page-counter"
+    const pageCounter = document.getElementById("ctrl-panel-page-counter");
+    const percentLabel = document.getElementById("ctrl-panel-percent");
+    if (!pageCounter || !percentLabel) {
+        console.warn("Unable to find control panel label references");
+        return;
+    }
+
+    const totalPages = getTotalPages();
+    pageCounter.innerText = `Page 0/${totalPages}`;
+    percentLabel.innerText = `0%`;
+
     for (let i = 1; i <= totalPages; i++) {
         let pagePE = new ParserErrorHandler();
 
@@ -32,10 +45,22 @@ async function main() {
         await setCurrentPage(paginator, i);
         const data = grabCourseDataTable(pagePE);
         pe.mergeErrorList(pagePE.getErrors());
-        console.log(data);
+
+        data.forEach((val: CourseRow) => {
+            IndexedDB.save("scraped", val.crn.toString(), val);
+        });
+
+        pageCounter.innerText = `Page ${i}/${totalPages}`;
+        percentLabel.innerText = `${((i/totalPages)*100).toFixed(2)}%`;
+
+        await sleep(2000);
     }
     
     pe.flush();
+}
+
+function sleep(ms: number) {
+    return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 /**

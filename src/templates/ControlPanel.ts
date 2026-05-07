@@ -67,8 +67,8 @@ export const ControlPanelHTML = `<div class="card-container" id="control-panel-c
         START
       </button>
       <div class="scraped-counter">
-        <div>Page 1/234</div>
-        <div>_0%</div>
+        <div id="ctrl-panel-page-counter">Page --/---</div>
+        <div id="ctrl-panel-percent">0%</div>
       </div>
     </div>
   </div>
