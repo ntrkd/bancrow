@@ -19,14 +19,12 @@ export class IndexedDBStore {
 
         for (const storeName of storeNames) {
           if (!db.objectStoreNames.contains(storeName)) {
-            console.log(`[IndexedDB] Creating store: ${storeName}`);
             db.createObjectStore(storeName);
           }
         }
       };
 
       request.onsuccess = () => {
-        console.log(`[IndexedDB] Opened DB: ${this.dbName}`);
         resolve(request.result);
       };
 
@@ -56,10 +54,6 @@ export class IndexedDBStore {
         const store = tx.objectStore(storeName);
 
         const request = store.put(value, key);
-
-        request.onsuccess = () => {
-          console.log(`[IndexedDB] Saved key:`, key);
-        };
 
         request.onerror = () => {
           console.error("[IndexedDB] Put error:", {
@@ -126,7 +120,6 @@ export class IndexedDBStore {
 
   close() {
     if (this.db) {
-      console.log("[IndexedDB] Closing DB");
       this.db.close();
       this.db = null;
     }
